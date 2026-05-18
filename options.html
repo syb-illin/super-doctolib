@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>super-doctolib</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body class="options-page">
+    <main class="settings-shell settings-shell-options">
+      <form id="settings-form" class="settings-card">
+        <section class="settings-section">
+          <h2>Compte</h2>
+          <label for="patient-filter">Patient à afficher</label>
+          <select id="patient-filter" name="patient-filter">
+            <option value="">Toutes les personnes</option>
+          </select>
+        </section>
+
+        <section class="settings-section">
+          <h2>Trajet</h2>
+          <label for="origin-address">Adresse de départ</label>
+          <textarea id="origin-address" name="origin-address" rows="3" autocomplete="street-address"></textarea>
+
+          <div class="settings-grid">
+            <div>
+              <label for="travel-mode">Mode</label>
+              <select id="travel-mode" name="travel-mode">
+                <option value="walking">🚶 À pied</option>
+                <option value="transit">🚇 Transports</option>
+                <option value="bicycling">🚲 Vélo</option>
+                <option value="driving">🚗 Voiture</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="walking-speed">Vitesse de marche</label>
+              <div class="unit-field">
+                <input id="walking-speed" name="walking-speed" type="number" min="1" max="10" step="0.1">
+                <span>km/h</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="safety-margin">Marge</label>
+              <div class="unit-field">
+                <input id="safety-margin" name="safety-margin" type="number" min="0" max="60" step="1">
+                <span>min</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h2>Avancé</h2>
+          <label for="appointment-density">Affichage du popup</label>
+          <select id="appointment-density" name="appointment-density">
+            <option value="comfortable">Confortable</option>
+            <option value="compact">Compact</option>
+          </select>
+
+          <label class="checkbox-row">
+            <input id="debug-enabled" name="debug-enabled" type="checkbox">
+            <span>Mode debug</span>
+          </label>
+        </section>
+
+        <div class="actions">
+          <button type="button" id="reset-button" class="button-secondary">Réinitialiser</button>
+          <button type="submit" class="button-primary">Sauvegarder</button>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </main>
+
+    <script src="quick-search-core.js"></script>
+    <script src="doctolib-api.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

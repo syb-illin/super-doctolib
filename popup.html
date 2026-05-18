@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>super-doctolib</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body class="popup-page">
+    <main class="settings-shell settings-shell-popup">
+      <header class="settings-header">
+        <img src="icons/icon-48.png" alt="" width="40" height="40">
+        <div>
+          <h1>super-doctolib</h1>
+          <p>RDV à venir <span id="extension-version" class="extension-version"></span></p>
+        </div>
+      </header>
+
+      <form id="quick-search-form" class="quick-search" aria-label="Recherche rapide Doctolib">
+        <input id="quick-search-doctor" type="search" autocomplete="off" placeholder="Nom du médecin" aria-label="Nom du médecin">
+        <span id="quick-search-doctor-status" class="doctor-search-status" role="status" aria-live="polite" hidden></span>
+        <div id="doctor-suggestions" class="doctor-suggestions" hidden></div>
+        <select id="quick-search-specialty" aria-label="Type de médecin">
+          <option value="" selected>Toutes spécialités</option>
+          <option value="addictologue">Addictologue</option>
+          <option value="allergologue">Allergologue</option>
+          <option value="angiologue">Angiologue</option>
+          <option value="cardiologue">Cardiologue</option>
+          <option value="chirurgien-general">Chirurgien général</option>
+          <option value="chirurgien-orthopediste">Chirurgien orthopédiste</option>
+          <option value="chirurgien-oral">Chirurgien oral</option>
+          <option value="chirurgien-visceral-et-digestif">Chirurgien viscéral</option>
+          <option value="dentiste">Dentiste</option>
+          <option value="dermatologue">Dermato</option>
+          <option value="dieteticien">Diététicien</option>
+          <option value="endocrinologue">Endocrinologue</option>
+          <option value="gastro-enterologue">Gastro-entérologue</option>
+          <option value="medecin-generaliste">Généraliste</option>
+          <option value="gynecologue-medical-et-obstetrique">Gynéco</option>
+          <option value="infirmier">Infirmier</option>
+          <option value="masseur-kinesitherapeute">Kinésithérapeute</option>
+          <option value="neurologue">Neurologue</option>
+          <option value="ophtalmologue">Ophtalmo</option>
+          <option value="orl-oto-rhino-laryngologie">ORL</option>
+          <option value="orthoptiste">Orthoptiste</option>
+          <option value="osteopathe">Ostéopathe</option>
+          <option value="pediatre">Pédiatre</option>
+          <option value="pedicure-podologue">Pédicure-podologue</option>
+          <option value="pneumologue">Pneumologue</option>
+          <option value="psychiatre">Psychiatre</option>
+          <option value="psychologue">Psychologue</option>
+          <option value="radiologue">Radiologue</option>
+          <option value="rhumatologue">Rhumatologue</option>
+          <option value="sage-femme">Sage-femme</option>
+          <option value="urologue">Urologue</option>
+        </select>
+        <select id="quick-search-location" aria-label="Arrondissement">
+          <option value="paris">Paris</option>
+          <option value="paris-75001">75001</option>
+          <option value="paris-75002">75002</option>
+          <option value="paris-75003">75003</option>
+          <option value="paris-75004">75004</option>
+          <option value="paris-75005">75005</option>
+          <option value="paris-75006">75006</option>
+          <option value="paris-75007">75007</option>
+          <option value="paris-75008">75008</option>
+          <option value="paris-75009">75009</option>
+          <option value="paris-75010">75010</option>
+          <option value="paris-75011">75011</option>
+          <option value="paris-75012">75012</option>
+          <option value="paris-75013">75013</option>
+          <option value="paris-75014">75014</option>
+          <option value="paris-75015">75015</option>
+          <option value="paris-75016">75016</option>
+          <option value="paris-75017">75017</option>
+          <option value="paris-75018">75018</option>
+          <option value="paris-75019">75019</option>
+          <option value="paris-75020">75020</option>
+        </select>
+        <button type="submit" id="quick-search-submit" class="quick-search-button" title="Rechercher sur Doctolib" aria-label="Rechercher sur Doctolib">⌕</button>
+        <div class="quick-search-shortcuts" aria-label="Raccourcis de recherche">
+          <button type="button" data-search-specialty="radiologue" data-search-location="paris-75007">Radiologue 75007</button>
+          <button type="button" data-search-specialty="dentiste" data-search-location="paris-75015">Dentiste 75015</button>
+          <button type="button" data-search-specialty="dermatologue" data-search-location="paris">Dermato Paris</button>
+        </div>
+        <div id="recent-searches" class="quick-search-recent" aria-label="Recherches récentes" hidden></div>
+      </form>
+
+      <section class="appointments-panel" aria-labelledby="appointments-title">
+        <div class="panel-heading">
+          <h2 id="appointments-title">Rendez-vous à venir</h2>
+          <span class="panel-links">
+            <a href="https://www.doctolib.fr/account/appointments" target="_blank" rel="noopener noreferrer">Doctolib</a>
+            <button type="button" id="open-options" class="panel-link-button">Options</button>
+          </span>
+        </div>
+        <div id="appointments-list" class="appointments-list"></div>
+        <p id="appointments-empty" class="appointments-empty">Ouvre Doctolib connecté pour remplir cette liste.</p>
+      </section>
+
+      <div id="cancel-dialog" class="cancel-dialog" hidden>
+        <div class="cancel-dialog-card" role="dialog" aria-modal="true" aria-labelledby="cancel-dialog-title">
+          <h2 id="cancel-dialog-title">Annuler ce RDV ?</h2>
+          <p id="cancel-dialog-details"></p>
+          <div class="cancel-dialog-actions">
+            <button type="button" id="cancel-dialog-close" class="button-secondary">Garder</button>
+            <button type="button" id="cancel-dialog-confirm" class="button-danger">Annuler le RDV</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="quick-search-core.js"></script>
+    <script src="doctolib-api.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

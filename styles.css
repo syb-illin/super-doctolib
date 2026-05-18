@@ -1,0 +1,225 @@
+.segur-directions-link {
+  border-color: #0066c9 !important;
+  box-shadow: 0 0 0 3px rgba(0, 102, 201, 0.12) !important;
+}
+
+.segur-directions-link::after {
+  content: "";
+}
+
+.segur-hidden-map-button {
+  display: none !important;
+}
+
+.segur-moved-facility-card {
+  margin-top: 16px !important;
+}
+
+.segur-map-preview {
+  background: #eef5fb;
+  border: 1px solid #bfd4e8;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: block;
+  height: 180px;
+  margin-top: 12px;
+  max-width: 420px;
+  overflow: hidden;
+  position: relative;
+  text-decoration: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  width: min(100%, 420px);
+}
+
+.segur-map-preview:hover {
+  border-color: #0066c9;
+  box-shadow: 0 8px 22px rgba(16, 43, 70, 0.14);
+  transform: translateY(-1px);
+}
+
+.segur-map-preview-frame {
+  border: 0;
+  display: block;
+  height: 100%;
+  pointer-events: none;
+  width: 100%;
+}
+
+.segur-map-preview-hint {
+  background: #0066c9;
+  border-radius: 999px;
+  bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0, 35, 75, 0.22);
+  color: #fff;
+  font: 700 12px/1.2 Arial, sans-serif;
+  padding: 7px 11px;
+  position: absolute;
+  right: 10px;
+}
+
+.segur-map-preview-meta {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 999px;
+  color: #102b46;
+  font: 700 12px/1.2 Arial, sans-serif;
+  left: 10px;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  padding: 7px 11px;
+  position: absolute;
+  text-overflow: ellipsis;
+  top: 10px;
+  white-space: nowrap;
+}
+
+.segur-assist-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  max-width: 420px;
+  width: min(100%, 420px);
+}
+
+.segur-assist-pill {
+  background: #eef7ff;
+  border: 1px solid #c5d8ec;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #102b46;
+  flex: 1 1 190px;
+  font: 700 12px/1.25 Arial, sans-serif;
+  min-width: 0;
+  padding: 8px 10px;
+  word-break: break-word;
+}
+
+.segur-assist-action {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #bfd4e8;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #0066c9;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 1 1 132px;
+  font: 700 12px/1.2 Arial, sans-serif;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px 10px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.segur-assist-action:hover {
+  border-color: #0066c9;
+  background: #f7fbff;
+}
+
+.segur-assist-action:disabled {
+  background: #eef3f7;
+  border-color: #d7e2ec;
+  color: #6f8498;
+  cursor: not-allowed;
+}
+
+.segur-weather-pill {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+}
+
+.segur-weather-icon {
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  flex: 0 0 30px;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
+}
+
+.segur-weather-icon svg {
+  fill: none;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+  width: 22px;
+}
+
+.segur-weather-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.segur-weather-title,
+.segur-weather-detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.segur-weather-title {
+  color: #102b46;
+  font-size: 13px;
+}
+
+.segur-weather-detail {
+  color: #4b647d;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.segur-weather-pill[data-weather="sun"] .segur-weather-icon {
+  background: #fff4cc;
+  color: #a96800;
+}
+
+.segur-weather-pill[data-weather="cloud"],
+.segur-weather-pill[data-weather="fog"] {
+  background: #f4f8fc;
+}
+
+.segur-weather-pill[data-weather="cloud"] .segur-weather-icon,
+.segur-weather-pill[data-weather="fog"] .segur-weather-icon {
+  background: #ddebf7;
+  color: #41627f;
+}
+
+.segur-weather-pill[data-weather="rain"],
+.segur-weather-pill[data-weather="storm"] {
+  background: #edf6ff;
+}
+
+.segur-weather-pill[data-weather="rain"] .segur-weather-icon,
+.segur-weather-pill[data-weather="storm"] .segur-weather-icon {
+  background: #d7ebff;
+  color: #0066c9;
+}
+
+.segur-weather-pill[data-weather="snow"] .segur-weather-icon {
+  background: #e6f7ff;
+  color: #21708d;
+}
+
+.segur-highlight-action {
+  box-shadow: 0 0 0 4px rgba(0, 121, 215, 0.24) !important;
+  outline: 2px solid #0079d7 !important;
+  outline-offset: 2px !important;
+}
+
+@media (max-width: 480px) {
+  .segur-map-preview {
+    height: 160px;
+  }
+
+  .segur-map-preview-hint,
+  .segur-map-preview-meta {
+    font-size: 11px;
+    max-width: calc(100% - 20px);
+  }
+}

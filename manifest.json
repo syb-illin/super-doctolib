@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "super-doctolib",
+  "description": "Remplace le lien carte Doctolib par un itinéraire Google Maps depuis 11 avenue de Ségur, Paris.",
+  "version": "1.0.89",
+  "permissions": [
+    "contextMenus",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.doctolib.fr/*",
+    "https://api-adresse.data.gouv.fr/*",
+    "https://nominatim.openstreetmap.org/*",
+    "https://router.project-osrm.org/*",
+    "https://api.open-meteo.com/*"
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "super-doctolib",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.doctolib.fr/account/appointments*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
