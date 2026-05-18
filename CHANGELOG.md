@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.91
+
+- Recherche médecin déclenchée uniquement à partir de 4 caractères.
+- Verrouillage temporaire du champ médecin pendant l'autocomplétion pour éviter les saisies concurrentes.
+- Mémoïsation courte et bornée des recherches médecin répétées côté popup.
+
+## 1.0.90
+
+- Remplacement du nom de test par `Roger RABBIT`.
+
 ## 1.0.89
 
 - Refactor du cache d'autocomplétion médecin vers une abstraction TTL bornée réutilisable.

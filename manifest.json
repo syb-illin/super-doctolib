@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "super-doctolib",
   "description": "Remplace le lien carte Doctolib par un itinéraire Google Maps depuis 11 avenue de Ségur, Paris.",
-  "version": "1.0.89",
+  "version": "1.0.91",
   "permissions": [
     "contextMenus",
     "scripting",

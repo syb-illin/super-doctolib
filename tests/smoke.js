@@ -12,7 +12,7 @@ const apiJs = fs.readFileSync(path.join(root, "doctolib-api.js"), "utf8");
 const coreJs = fs.readFileSync(path.join(root, "quick-search-core.js"), "utf8");
 const endpointScript = fs.readFileSync(path.join(root, "scripts", "test-endpoints.js"), "utf8");
 
-assert(manifest.version === "1.0.89", "manifest version should be 1.0.89");
+assert(manifest.version === "1.0.91", "manifest version should be 1.0.91");
 assert(manifest.permissions.includes("contextMenus"), "context menu permission should be declared");
 assert(manifest.permissions.includes("scripting"), "popup should be able to execute autocomplete in the Doctolib page context");
 assert(manifest.permissions.includes("tabs"), "popup should be able to query the Doctolib tab for native autocomplete");
@@ -135,6 +135,10 @@ assert(!apiJs.includes("return searchbarAutocomplete(keyword, signal);"), "docto
 assert(!apiJs.includes("shouldKeepAutocompleteResult"), "single-token doctor search should not keep non-profile autocomplete results");
 assert(optionsJs.includes("normalizeDoctorSuggestions"), "doctor name validation should normalize autocomplete suggestions");
 assert(optionsJs.includes("setDoctorStatus"), "doctor search UI states should be centralized");
+assert(optionsJs.includes("setDoctorSearchBusy"), "doctor search input should be locked while autocomplete is running");
+assert(optionsJs.includes("DOCTOR_VALIDATION_MIN_CHARS = 4"), "doctor autocomplete should wait for a useful minimum query length");
+assert(optionsJs.includes("doctorValidationCache"), "doctor validation should memoize repeated autocomplete calls");
+assert(optionsJs.includes("DOCTOR_VALIDATION_CACHE_LIMIT"), "doctor validation cache should be bounded");
 assert(optionsJs.includes("payload?.profiles"), "doctor name validation should read profile suggestions from autocomplete");
 assert(optionsJs.includes("isAmbiguous"), "doctor name validation should avoid false exact matches when several profiles match");
 assert(optionsJs.includes("showDoctorSuggestions"), "ambiguous doctor searches should show selectable matches");

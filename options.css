@@ -65,6 +65,13 @@ body {
   padding: 7px 9px;
 }
 
+.quick-search input:disabled {
+  background: #f8fbfe;
+  color: #496783;
+  cursor: progress;
+  opacity: 1;
+}
+
 .doctor-search-status {
   border-radius: 7px;
   font-size: 11px;
@@ -180,6 +187,12 @@ body {
 .quick-search-button:hover {
   background: #0064b2;
   border-color: #0064b2;
+}
+
+.quick-search-button:disabled {
+  background: #7fbbe8;
+  border-color: #7fbbe8;
+  cursor: progress;
 }
 
 h1,

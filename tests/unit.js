@@ -6,8 +6,8 @@ const {
 } = require("../quick-search-core.js");
 
 assert(slugSegment("Gynécologue médical") === "gynecologue-medical", "slugSegment removes accents");
-assert(normalizedSearch("Franck THOMAS") === "franck thomas", "normalizedSearch lowercases names");
-assert(titleCaseName("FRANCK THOMAS") === "Franck Thomas", "titleCaseName formats all-caps names");
+assert(normalizedSearch("Roger RABBIT") === "roger rabbit", "normalizedSearch lowercases names");
+assert(titleCaseName("ROGER RABBIT") === "Roger Rabbit", "titleCaseName formats all-caps names");
 
 const select = {
   value: "",

@@ -45,13 +45,18 @@ let doctorValidationTimer = 0;
 let doctorValidation = { key: "", url: "" };
 let doctorSuggestionMatches = [];
 let doctorSuggestionByUrl = new Map();
+let doctorSearchBusy = false;
 let suppressDoctorValidation = false;
 let selectingDoctorSuggestion = false;
 const availabilityCache = new Map();
+const doctorValidationCache = new Map();
 const ADDRESS_MIN_SCORE = 0.55;
 const APPOINTMENT_CACHE_SCHEMA = 3;
 const AVAILABILITY_CACHE_TTL_MS = 5 * 60 * 1000;
 const DOCTOR_VALIDATION_DELAY_MS = 350;
+const DOCTOR_VALIDATION_MIN_CHARS = 4;
+const DOCTOR_VALIDATION_CACHE_TTL_MS = 2 * 60 * 1000;
+const DOCTOR_VALIDATION_CACHE_LIMIT = 24;
 const PENDING_APPOINTMENT_ACTION_KEY = "pendingAppointmentAction";
 const RECENT_SEARCHES_KEY = "quickSearchRecent";
 const RECENT_SEARCHES_LIMIT = 5;
@@ -137,6 +142,16 @@ function setDoctorStatus(type, message) {
   quickSearchDoctorStatus.hidden = !message;
   quickSearchDoctorStatus.className = `doctor-search-status doctor-search-status-${type}`;
   quickSearchDoctorStatus.textContent = message || "";
+}
+
+function setDoctorSearchBusy(isBusy) {
+  doctorSearchBusy = Boolean(isBusy);
+  if (quickSearchDoctor) {
+    quickSearchDoctor.disabled = doctorSearchBusy;
+    quickSearchDoctor.setAttribute("aria-busy", String(doctorSearchBusy));
+  }
+  if (quickSearchSubmit) quickSearchSubmit.disabled = doctorSearchBusy;
+  if (quickSearchForm) quickSearchForm.classList.toggle("quick-search-busy", doctorSearchBusy);
 }
 
 function numberOrDefault(value, fallback) {
@@ -705,6 +720,8 @@ function selectDoctorProfile(provider, location) {
   suppressDoctorValidation = true;
   window.clearTimeout(doctorValidationTimer);
   doctorValidationController?.abort();
+  doctorValidationController = null;
+  setDoctorSearchBusy(false);
   clearDoctorSuggestions();
   if (quickSearchDoctor) quickSearchDoctor.value = displayName;
   setDoctorStatus("ok", `${displayName} sélectionné · clique la loupe`);
@@ -818,6 +835,32 @@ function scheduleDoctorValidation() {
   doctorValidationTimer = window.setTimeout(validateDoctorSearch, DOCTOR_VALIDATION_DELAY_MS);
 }
 
+function doctorValidationCacheKey(doctor, location) {
+  return `${normalizedSearch(doctor)}::${String(location || "").toLowerCase()}`;
+}
+
+function doctorValidationCacheGet(doctor, location) {
+  const key = doctorValidationCacheKey(doctor, location);
+  const entry = doctorValidationCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.createdAt > DOCTOR_VALIDATION_CACHE_TTL_MS) {
+    doctorValidationCache.delete(key);
+    return null;
+  }
+
+  doctorValidationCache.delete(key);
+  doctorValidationCache.set(key, entry);
+  return entry.payload;
+}
+
+function doctorValidationCacheSet(doctor, location, payload) {
+  const key = doctorValidationCacheKey(doctor, location);
+  doctorValidationCache.set(key, { createdAt: Date.now(), payload });
+  while (doctorValidationCache.size > DOCTOR_VALIDATION_CACHE_LIMIT) {
+    doctorValidationCache.delete(doctorValidationCache.keys().next().value);
+  }
+}
+
 async function validateDoctorSearch() {
   if (suppressDoctorValidation) return;
   if (!quickSearchDoctorStatus) return;
@@ -826,17 +869,33 @@ async function validateDoctorSearch() {
   const location = selectedSearchSegment(quickSearchLocation, quickSearchLocation?.value, "paris");
 
   doctorValidationController?.abort();
+  doctorValidationController = null;
   doctorValidation = { key: "", url: "" };
   doctorSuggestionMatches = [];
   clearDoctorSuggestions();
 
   if (!doctor) {
+    setDoctorSearchBusy(false);
     setDoctorStatus("loading", "");
+    return;
+  }
+
+  if (doctor.length < DOCTOR_VALIDATION_MIN_CHARS) {
+    setDoctorSearchBusy(false);
+    setDoctorStatus("loading", `Tape au moins ${DOCTOR_VALIDATION_MIN_CHARS} caractères`);
+    return;
+  }
+
+  const cachedPayload = doctorValidationCacheGet(doctor, location);
+  if (cachedPayload) {
+    setDoctorSearchBusy(false);
+    applyDoctorSearchPayload(cachedPayload, doctor, location);
     return;
   }
 
   doctorValidationController = new AbortController();
   const controller = doctorValidationController;
+  setDoctorSearchBusy(true);
   setDoctorStatus("loading", "Recherche...");
 
   try {
@@ -846,42 +905,50 @@ async function validateDoctorSearch() {
       signal: controller.signal
     });
     if (controller.signal.aborted) return;
-
-    const suggestions = normalizeDoctorSuggestions(payload);
-    const filteredSuggestions = filterDoctorSuggestions(
-      suggestions,
-      selectedSpecialtySegment(quickSearchSpecialty?.value),
-      location
-    );
-    const match = bestDoctorMatch(filteredSuggestions.length ? filteredSuggestions : suggestions, doctor);
-    match.isFiltered = filteredSuggestions.length > 0;
-    doctorSuggestionMatches = match.matches;
-    const provider = match.provider;
-    if (match.matches.length > 0) {
-      setDoctorStatus("loading", `${match.matches.length} profil${match.matches.length > 1 ? "s" : ""} trouvé${match.matches.length > 1 ? "s" : ""} · sélectionne un profil`);
-      showDoctorSuggestions(match.matches, location);
-      return;
-    }
-
-    if (!provider?.link) {
-      setDoctorStatus("empty", doctorSearchEmptyMessage(payload));
-      return;
-    }
-    if (match.isAmbiguous) {
-      setDoctorStatus("empty", `${match.count} profils trouvés · choisis le bon`);
-      showDoctorSuggestions(match.matches, location);
-      return;
-    }
-
-    doctorValidation = {
-      key: doctorValidationKey(doctor, location),
-      url: new URL(provider.link, "https://www.doctolib.fr").toString()
-    };
-    setDoctorStatus("ok", `✓ ${provider.label}`);
+    doctorValidationCacheSet(doctor, location, payload);
+    applyDoctorSearchPayload(payload, doctor, location);
   } catch (error) {
     if (controller.signal.aborted) return;
     setDoctorStatus("empty", doctorSearchErrorMessage(error));
+  } finally {
+    if (doctorValidationController === controller) {
+      setDoctorSearchBusy(false);
+    }
   }
+}
+
+function applyDoctorSearchPayload(payload, doctor, location) {
+  const suggestions = normalizeDoctorSuggestions(payload);
+  const filteredSuggestions = filterDoctorSuggestions(
+    suggestions,
+    selectedSpecialtySegment(quickSearchSpecialty?.value),
+    location
+  );
+  const match = bestDoctorMatch(filteredSuggestions.length ? filteredSuggestions : suggestions, doctor);
+  match.isFiltered = filteredSuggestions.length > 0;
+  doctorSuggestionMatches = match.matches;
+  const provider = match.provider;
+  if (match.matches.length > 0) {
+    setDoctorStatus("loading", `${match.matches.length} profil${match.matches.length > 1 ? "s" : ""} trouvé${match.matches.length > 1 ? "s" : ""} · sélectionne un profil`);
+    showDoctorSuggestions(match.matches, location);
+    return;
+  }
+
+  if (!provider?.link) {
+    setDoctorStatus("empty", doctorSearchEmptyMessage(payload));
+    return;
+  }
+  if (match.isAmbiguous) {
+    setDoctorStatus("empty", `${match.count} profils trouvés · choisis le bon`);
+    showDoctorSuggestions(match.matches, location);
+    return;
+  }
+
+  doctorValidation = {
+    key: doctorValidationKey(doctor, location),
+    url: new URL(provider.link, "https://www.doctolib.fr").toString()
+  };
+  setDoctorStatus("ok", `✓ ${provider.label}`);
 }
 
 function doctorSearchEmptyMessage(payload) {
@@ -1246,7 +1313,7 @@ if (quickSearchDoctor) {
     scheduleDoctorValidation();
   });
   quickSearchDoctor.addEventListener("blur", () => {
-    if (selectingDoctorSuggestion || suppressDoctorValidation) return;
+    if (selectingDoctorSuggestion || suppressDoctorValidation || doctorSearchBusy) return;
     validateDoctorSearch();
   });
 }
